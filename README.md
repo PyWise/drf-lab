@@ -21,7 +21,7 @@ Here I apply everything I'm learning about building RESTful APIs using Python an
    ```bash
    git clone https://github.com/your-username/drf-lab.git
    cd drf-lab
-````
+   ```
 
 2. **Create and activate a virtual environment**
 
