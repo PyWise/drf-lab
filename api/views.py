@@ -7,6 +7,8 @@ from blogs.models import Blog, Comment
 from .serializers import StudentSerializer, EmployeeSerializer
 from blogs.serializers import BlogSerializer, CommentSerializer
 
+from .paginations import CustomPagination
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -179,6 +181,7 @@ class EmployeeDetail(generics.RetrieveUpdateDestroyAPIView):
 class EmployeeViewset(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
+    pagination_class = CustomPagination
 
 
 class BlogsView(generics.ListCreateAPIView):
