@@ -1,4 +1,3 @@
-````markdown
 # 🧠 Django DRF Learning Repo
 
 Este é meu repositório de aprendizado pessoal, construído com **Django** e **Django REST Framework (DRF)**.  
