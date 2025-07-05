@@ -9,11 +9,14 @@ from blogs.serializers import BlogSerializer, CommentSerializer
 
 from .paginations import CustomPagination
 
+from .filters import EmployeeFilter
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import mixins, generics, viewsets
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from django.http import Http404
 
@@ -183,10 +186,24 @@ class EmployeeViewset(viewsets.ModelViewSet):
     serializer_class = EmployeeSerializer
     pagination_class = CustomPagination
 
+    # Global Filter
+    # filterset_fields = ["emp_designation"]
+
+    # Custom Filter
+    filterset_class = EmployeeFilter
+
 
 class BlogsView(generics.ListCreateAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
+
+    # Search Filters
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = [
+        "blog_title",  # "^blog_title" if you something in the start
+        "blog_body",
+    ]
+    ordering_fields = ["id", "blog_title"]
 
 
 class CommentsView(generics.ListCreateAPIView):
