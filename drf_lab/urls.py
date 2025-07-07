@@ -24,4 +24,6 @@ urlpatterns = [
     path("students/", include("students.urls")),
     # API Endpoints
     path("api/v1/", include("api.urls")),
+    # Temporary Login
+    path("api-auth/", include("rest_framework.urls")),
 ]

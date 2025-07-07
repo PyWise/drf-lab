@@ -205,6 +205,12 @@ class BlogsView(generics.ListCreateAPIView):
     ]
     ordering_fields = ["id", "blog_title"]
 
+    # Include user by overriding generic creation method
+    def perform_create(self, serializer):
+        blog_user = self.request.user
+
+        serializer.save(blog_user=blog_user)
+
 
 class CommentsView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
