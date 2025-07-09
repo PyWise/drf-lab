@@ -8,8 +8,8 @@ from .serializers import StudentSerializer, EmployeeSerializer
 from blogs.serializers import BlogSerializer, CommentSerializer
 
 from .paginations import CustomPagination
-
 from .filters import EmployeeFilter
+from .permissions import AdminOrReadOnly, BlogUserOrReadOnly
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -17,6 +17,7 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import mixins, generics, viewsets
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from django.http import Http404
 
@@ -205,6 +206,9 @@ class BlogsView(generics.ListCreateAPIView):
     ]
     ordering_fields = ["id", "blog_title"]
 
+    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AdminOrReadOnly]
+
     # Include user by overriding generic creation method
     def perform_create(self, serializer):
         blog_user = self.request.user
@@ -221,6 +225,7 @@ class BlogDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
     lookup_field = "pk"
+    permission_classes = [BlogUserOrReadOnly]
 
 
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):

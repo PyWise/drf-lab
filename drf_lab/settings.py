@@ -140,4 +140,6 @@ REST_FRAMEWORK = {
     # Custom Params
     "SEARCH_PARAM": "q",
     "ORDERING_PARAM": "order-by",
+    # Global Permission
+    # "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
 }
