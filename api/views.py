@@ -3,8 +3,9 @@ from django.shortcuts import render, get_object_or_404
 from students.models import Student
 from employees.models import Employee
 from blogs.models import Blog, Comment
+from . import models
 
-from .serializers import StudentSerializer, EmployeeSerializer
+from .serializers import RegistrationSerializer, StudentSerializer, EmployeeSerializer
 from blogs.serializers import BlogSerializer, CommentSerializer
 
 from .paginations import CustomPagination
@@ -13,6 +14,7 @@ from .permissions import AdminOrReadOnly, BlogUserOrReadOnly
 
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import mixins, generics, viewsets
@@ -207,7 +209,8 @@ class BlogsView(generics.ListCreateAPIView):
     ordering_fields = ["id", "blog_title"]
 
     # permission_classes = [IsAuthenticatedOrReadOnly]
-    permission_classes = [AdminOrReadOnly]
+    # permission_classes = [AdminOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
     # Include user by overriding generic creation method
     def perform_create(self, serializer):
@@ -232,3 +235,33 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     lookup_field = "pk"
+
+
+@api_view(["POST"])
+def registration_view(request):
+    if request.method == "POST":
+        serializer = RegistrationSerializer(data=request.data)
+        
+        data = {}
+        
+        if serializer.is_valid():
+		    # create user + token
+            account = serializer.save()
+            
+            # returning user data
+            data['response'] = "Registration Successful!"
+            data['username'] = account.username
+            data['email'] = account.email
+
+            token = Token.objects.get(user=account).key
+            data['token'] = token
+        else:
+            data = serializer.errors
+        
+        return Response(data)
+
+@api_view(["POST"])
+def logout_view(request):
+    if request.method == 'POST':
+        request.user.auth_token.delete()
+        return Response(status=status.HTTP_200_OK)
