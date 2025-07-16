@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from students.models import Student
 from employees.models import Employee
 from blogs.models import Blog, Comment
-from . import models
+# from . import models
 
 from .serializers import RegistrationSerializer, StudentSerializer, EmployeeSerializer
 from blogs.serializers import BlogSerializer, CommentSerializer
@@ -22,6 +22,8 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from django.http import Http404
+
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 @api_view(["GET", "POST"])
@@ -241,27 +243,35 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
 def registration_view(request):
     if request.method == "POST":
         serializer = RegistrationSerializer(data=request.data)
-        
-        data = {}
-        
-        if serializer.is_valid():
-		    # create user + token
-            account = serializer.save()
-            
-            # returning user data
-            data['response'] = "Registration Successful!"
-            data['username'] = account.username
-            data['email'] = account.email
 
-            token = Token.objects.get(user=account).key
-            data['token'] = token
+        data = {}
+
+        if serializer.is_valid():
+            # create user + token
+            account = serializer.save()
+
+            # returning user data
+            data["response"] = "Registration Successful!"
+            data["username"] = account.username
+            data["email"] = account.email
+
+            # token = Token.objects.get(user=account).key
+            # data['token'] = token
+
+            refresh = RefreshToken.for_user(account)
+
+            data["token"] = {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
         else:
             data = serializer.errors
-        
-        return Response(data)
+
+        return Response(data, status=status.HTTP_201_CREATED)
+
 
 @api_view(["POST"])
 def logout_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         request.user.auth_token.delete()
         return Response(status=status.HTTP_200_OK)

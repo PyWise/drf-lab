@@ -5,6 +5,8 @@ from rest_framework.routers import DefaultRouter
 
 from rest_framework.authtoken.views import obtain_auth_token
 
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 router = DefaultRouter()
 router.register("employees", views.EmployeeViewset, basename="employees")
 
@@ -18,8 +20,11 @@ urlpatterns = [
     path("comments/", views.CommentsView.as_view()),
     path("blogs/<int:pk>/", views.BlogDetailView.as_view()),
     path("comments/<int:pk>/", views.CommentDetailView.as_view()),
-    # token login (give token after login)
-    path("login/", obtain_auth_token, name="login"),
+    # Token Authentication
+    # path("login/", obtain_auth_token, name="login"),
     path("register/", views.registration_view, name="register"),
-    path("logout/", views.logout_view, name="logout"),
+    # path("logout/", views.logout_view, name="logout"),
+    # JWT Authentication
+    path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]
